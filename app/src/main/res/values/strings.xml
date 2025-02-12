@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">possible</string>
+    <string name="next_stop">Next Stop</string>
+    <string name="distance_left">Distance Left</string>
+    <string name="total_distance">Total Distance</string>
+    <string name="distance">Distance</string>
+    <string name="miles">Miles</string>
+    <string name="reset">Reset</string>
+</resources>

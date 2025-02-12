@@ -1,0 +1,20 @@
+Prague,false,0.0
+Brno,false,200.0
+Ostrava,false,370.0
+Plzeň,false,90.0
+Liberec,false,110.0
+Olomouc,false,250.0
+České Budějovice,false,150.0
+Hradec Králové,false,120.0
+Ústí nad Labem,false,85.0
+Pardubice,false,130.0
+Zlín,false,280.0
+Karlovy Vary,false,130.0
+Jihlava,false,150.0
+Teplice,false,90.0
+Havířov,false,360.0
+Kladno,false,25.0
+Most,false,80.0
+Opava,false,340.0
+Frýdek-Místek,false,330.0
+Děčín,false,80.0

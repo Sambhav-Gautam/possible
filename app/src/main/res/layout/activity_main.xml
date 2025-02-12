@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#050404"
+    tools:context=".MainActivity">
+
+    <!-- Top Container for Buttons -->
+    <LinearLayout
+        android:id="@+id/topContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="16dp"
+        android:layout_marginTop="40dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <Button
+            android:id="@+id/resetButton"
+            android:layout_width="120dp"
+            android:layout_height="50dp"
+            android:text="Reset"/>
+
+        <View
+            android:layout_width="48dp"
+            android:layout_height="1dp" />
+
+        <Button
+            android:id="@+id/switchUnitsButton"
+            android:layout_width="120dp"
+            android:layout_height="50dp"
+            android:text="KM"/>
+    </LinearLayout>
+
+    <!-- Destination Selection Fields -->
+    <LinearLayout
+        android:id="@+id/destinationInputContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="16dp"
+        app:layout_constraintTop_toBottomOf="@id/topContainer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <Spinner
+            android:id="@+id/startDestinationSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#FBFBFB"
+            android:padding="12dp"/>
+
+        <Spinner
+            android:id="@+id/endDestinationSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#FBFBFB"
+            android:padding="12dp"
+            android:layout_marginTop="12dp"/>
+
+        <Button
+            android:id="@+id/setDestinationsButton"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:text="Set Destinations"
+            android:layout_marginTop="12dp"/>
+    </LinearLayout>
+
+    <!-- Distance Info Container -->
+    <LinearLayout
+        android:id="@+id/distanceContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="16dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintTop_toBottomOf="@id/destinationInputContainer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:id="@+id/totalDistanceText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Total Distance: 0 KM"
+            android:textColor="#FBFBFB"
+            android:textSize="20sp"
+            android:paddingBottom="12dp"/>
+
+        <TextView
+            android:id="@+id/distanceLeftText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Distance Left: 0 KM"
+            android:textColor="#FBFBFB"
+            android:textSize="20sp"/>
+    </LinearLayout>
+
+    <!-- Progress Bar -->
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="250dp"
+        android:layout_height="30dp"
+        android:max="100"
+        android:indeterminate="false"
+        android:layout_marginTop="30dp"
+        app:layout_constraintTop_toBottomOf="@id/distanceContainer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Next Stop Button -->
+    <Button
+        android:id="@+id/nextStopButton"
+        android:layout_width="140dp"
+        android:layout_height="50dp"
+        android:text="Next Stop"
+        android:layout_marginTop="30dp"
+        app:layout_constraintTop_toBottomOf="@id/progressBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- RecyclerView for Stops -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/stopsRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintTop_toBottomOf="@id/nextStopButton"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:padding="16dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
