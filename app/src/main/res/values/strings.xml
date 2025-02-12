@@ -6,4 +6,8 @@
     <string name="distance">Distance</string>
     <string name="miles">Miles</string>
     <string name="reset">Reset</string>
+    <string name="total_distance_0_km">Total Distance: 0 KM</string>
+    <string name="distance_left_0_km">Distance Left: 0 KM</string>
+    <string name="km">KM</string>
+    <string name="set_destinations">Set Destinations</string>
 </resources>

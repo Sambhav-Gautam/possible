@@ -138,13 +138,11 @@ class MainActivity : AppCompatActivity() {
 
         stopsList = allStops.subList(startIndex, endIndex + 1)
 
-        // Compute total distance as sum of consecutive differences
-        totalDistance = 0.0
-        for (i in 0 until stopsList.size - 1) {
-            totalDistance += stopsList[i + 1].distance
-        }
 
-        distanceLeft = totalDistance
+        totalDistance = 0.0
+
+        distanceLeft = stopsList.sumOf { it.distance }
+
         currentStopIndex = 0
 
         setupRecyclerView()
@@ -184,7 +182,13 @@ class MainActivity : AppCompatActivity() {
         if (currentStopIndex < stopsList.size - 1) {
             currentStopIndex++
             val currentStop = stopsList[currentStopIndex]
-            distanceLeft = totalDistance - (currentStop.distance - stopsList.first().distance)
+
+
+            totalDistance += stopsList[currentStopIndex ].distance
+
+
+            distanceLeft -= stopsList[currentStopIndex ].distance
+
             updateDistanceTexts()
 
             (stopsRecyclerView.adapter as? StopsAdapter)?.updateCurrentStopIndex(currentStopIndex)
@@ -193,7 +197,7 @@ class MainActivity : AppCompatActivity() {
                 showVisaAlert(currentStop.name)
             }
 
-            if (currentStopIndex == stopsList.size - 1) {
+            if (currentStopIndex == stopsList.size) {
                 showFinalStopAlert()
             }
         }
@@ -224,5 +228,4 @@ class MainActivity : AppCompatActivity() {
         setupRecyclerView()
         updateDistanceTexts()
     }
-
 }

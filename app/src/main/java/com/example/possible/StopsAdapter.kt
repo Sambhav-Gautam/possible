@@ -60,10 +60,4 @@ class StopsAdapter(private var stops: List<Stop>, private var currentStopIndex: 
 
 
     override fun getItemCount() = stops.size
-
-//    fun updateStops(newStops: List<Stop>, newCurrentIndex: Int) {
-//        stops = newStops
-//        currentStopIndex = newCurrentIndex
-//        notifyDataSetChanged()
-//    }
 }
