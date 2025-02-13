@@ -37,7 +37,7 @@ This app allows users to track their journey by selecting start and end destinat
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/SAMBHAVGAUTAM/Journey-Tracking-App.git
+   git clone https://github.com/Sambhav-Gautam/Journey-Tracking-App.git
    ```
 2. Open the project in Android Studio.
 3. Build and run the application on an emulator or physical device.
