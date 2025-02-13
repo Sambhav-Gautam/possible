@@ -40,16 +40,6 @@ class StopsAdapter(private var stops: List<Stop>, private var currentStopIndex: 
         }
 
 
-        holder.itemView.setOnClickListener {
-            if (currentStopIndex != position) {
-                val previousIndex = currentStopIndex
-                currentStopIndex = position
-
-
-                notifyItemChanged(previousIndex)
-                notifyItemChanged(currentStopIndex)
-            }
-        }
     }
     fun updateCurrentStopIndex(newIndex: Int) {
         val previousIndex = currentStopIndex

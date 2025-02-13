@@ -28,6 +28,8 @@ class MainActivity : AppCompatActivity() {
     private var currentStopIndex = 0
     private var totalDistance = 0.0
     private var distanceLeft = 0.0
+    private var totalDistanceForCal = 0.0
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -142,6 +144,7 @@ class MainActivity : AppCompatActivity() {
         totalDistance = 0.0
 
         distanceLeft = stopsList.sumOf { it.distance }
+        totalDistanceForCal = stopsList.sumOf { it.distance }  // Store total distance for progress bar calculation
 
         currentStopIndex = 0
 
@@ -172,7 +175,7 @@ class MainActivity : AppCompatActivity() {
         distanceLeftText.text = "Distance Left: ${String.format("%.2f", distanceLeft * conversionFactor)} $unit"
         nextStopButton.text = "Next: ${if (currentStopIndex < stopsList.size - 1) stopsList[currentStopIndex + 1].name else "End"}"
 
-        progressBar.progress = ((totalDistance - distanceLeft) / totalDistance * 100).toInt()
+        progressBar.progress = ((totalDistanceForCal  - distanceLeft) / totalDistanceForCal  * 100).toInt()
     }
 
 
