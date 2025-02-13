@@ -30,13 +30,13 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            JourneyTrackerUI()
+            PossibleComposeUI()
         }
     }
 }
 
 @Composable
-fun JourneyTrackerUI() {
+fun PossibleComposeUI() {
     val context = LocalContext.current
     var stops by remember { mutableStateOf(loadStopsFromFile(context)) }
     var selectedStart by remember { mutableStateOf(stops.firstOrNull()?.name ?: "") }
@@ -47,16 +47,19 @@ fun JourneyTrackerUI() {
     var currentStopIndex by remember { mutableIntStateOf(0) }
     var showStops by remember { mutableStateOf(false) }
     var isKm by remember { mutableStateOf(true) }
-
+    var isReversed by remember { mutableStateOf(false) }
+    var totalDistanceToTravel by remember { mutableStateOf(0.0) }
 
     // ✅ Remember LazyListState to handle auto-scrolling
     val listState = rememberLazyListState()
     var showDialog by remember { mutableStateOf(false) }
 
-    // ✅ Auto-scroll to the current stop whenever it changes
     LaunchedEffect(currentStopIndex) {
-        listState.animateScrollToItem(currentStopIndex)
+        if (currentStopIndex in stops.indices) {
+            listState.animateScrollToItem(currentStopIndex)
+        }
     }
+
 
     fun resetJourney() {
         stops = loadStopsFromFile(context)
@@ -99,27 +102,36 @@ fun JourneyTrackerUI() {
 
         Spacer(modifier = Modifier.height(20.dp))
 
+        // Dropdown for selecting the start destination
         DestinationDropdown("Start Destination", selectedStart, stops) { newStart ->
             selectedStart = newStart
-            if (stops.indexOfFirst { it.name == selectedStart } > stops.indexOfFirst { it.name == selectedEnd }) {
-                selectedEnd = newStart
-            }
         }
+
+// Dropdown for selecting the end destination
         Spacer(modifier = Modifier.height(12.dp))
         DestinationDropdown("End Destination", selectedEnd, stops) { newEnd ->
             selectedEnd = newEnd
-            if (stops.indexOfFirst { it.name == selectedEnd } < stops.indexOfFirst { it.name == selectedStart }) {
-                selectedStart = newEnd
-            }
         }
 
         Button(onClick = {
-            totalDistance = calculateTotalDistance(stops, selectedStart, selectedEnd)
-            distanceLeft = totalDistance
-            showStops = true
+            val startIndex = stops.indexOfFirst { it.name == selectedStart }
+            val endIndex = stops.indexOfFirst { it.name == selectedEnd }
+
+            if (startIndex != -1 && endIndex != -1) {
+                isReversed = startIndex > endIndex
+                totalDistance = 0.0
+                totalDistanceToTravel = calculateTotalDistance(stops, selectedStart, selectedEnd)
+                distanceLeft = calculateTotalDistance(stops, selectedStart, selectedEnd)
+                progress = 0f
+                currentStopIndex = startIndex
+                showStops = true
+            }
         }, modifier = Modifier.padding(top = 12.dp)) {
             Text("Set Destinations")
         }
+
+
+
 
         Spacer(modifier = Modifier.height(20.dp))
         Text("Total Distance: ${convertDistance(totalDistance, isKm)} ${if (isKm) "km" else "miles"}", color = Color.White, fontSize = 20.sp)
@@ -134,53 +146,87 @@ fun JourneyTrackerUI() {
         )
 
         Spacer(modifier = Modifier.height(20.dp))
+
         Button(onClick = {
-            val endIndex = stops.indexOfFirst { it.name == selectedEnd }
             if (showStops) {
-                if (currentStopIndex < endIndex) {
-                    currentStopIndex++
-                    distanceLeft -= stops[currentStopIndex].distance
-                    progress = (1.0 - (distanceLeft / totalDistance)).coerceIn(0.0, 1.0).toFloat()
+                val endIndex = stops.indexOfFirst { it.name == selectedEnd }
+
+                if (!isReversed) {
+                    // Moving forward
+                    if (currentStopIndex < endIndex) {
+                        totalDistance += stops[currentStopIndex].distance // Add current index distance
+                        currentStopIndex++
+                    } else {
+                        showDialog = true
+                    }
                 } else {
-                    showDialog = true  // Show alert when final destination is reached
+                    // Moving backward
+                    if (currentStopIndex > endIndex) {
+                        totalDistance += stops[currentStopIndex].distance // Add current index distance
+                        currentStopIndex--
+                    } else {
+                        showDialog = true
+                    }
                 }
+
+                // Update distance left and progress
+                distanceLeft -= stops[currentStopIndex].distance
+                progress = (1.0 - (distanceLeft / totalDistanceToTravel)).toFloat()
             }
         }) {
             Text("Next Stop")
         }
+
+
+
 
         // Show an alert dialog when the journey ends
         if (showDialog) {
             AlertDialog(
                 onDismissRequest = { showDialog = false },
                 title = { Text("Journey Completed") },
-                text = { Text("You have reached your final destination!") },
+                text = { Text("You have reached your final destination! Would you like to reset the journey?") },
                 confirmButton = {
-                    Button(onClick = { showDialog = false }) {
-                        Text("OK")
+                    Button(onClick = {
+                        showDialog = false
+                        resetJourney() // Call reset function
+                    }) {
+                        Text("Reset")
                     }
-                }
+                },
+
             )
         }
 
 
+
         Spacer(modifier = Modifier.height(20.dp))
         if (showStops) {
-        LazyColumn(modifier = Modifier.fillMaxHeight(),state = listState) {
-            itemsIndexed(stops) { index, stop ->
-                if (index in stops.indexOfFirst { it.name == selectedStart }..stops.indexOfFirst { it.name == selectedEnd }) {
-                    StopItem(stop, isCurrent = index == currentStopIndex) {
-                        if (index <= stops.indexOfFirst { it.name == selectedEnd }) {
-                            currentStopIndex = index
-                            distanceLeft = totalDistance - stops.subList(0, index + 1)
-                                .sumOf { it.distance.toInt() }
-                            progress = (1.0 - (distanceLeft / totalDistance)).toFloat()
-                        }
+            val startIndex = stops.indexOfFirst { it.name == selectedStart }
+            val endIndex = stops.indexOfFirst { it.name == selectedEnd }
+
+            val displayedStops = if (isReversed) {
+                stops.subList(endIndex, startIndex + 1)
+            } else {
+                stops.subList(startIndex, endIndex + 1)
+            }
+
+            LazyColumn(
+                modifier = Modifier.fillMaxHeight(),
+                state = listState
+            ) {
+                itemsIndexed(displayedStops.drop(currentStopIndex).take(3)) { index, stop ->
+                    StopItem(stop, isCurrent = (currentStopIndex + index) == currentStopIndex) {
+                        currentStopIndex = currentStopIndex + index
+                        totalDistance = calculateTotalDistance(stops, selectedStart, stops[currentStopIndex].name)
+                        distanceLeft = calculateTotalDistance(stops, stops[currentStopIndex].name, selectedEnd)
+                        progress = (1.0 - (distanceLeft / totalDistance)).toFloat()
                     }
                 }
             }
+
         }
-    }
+
     }
 }
 
@@ -233,10 +279,17 @@ fun loadStopsFromFile(context: Context): List<Stop> {
 fun calculateTotalDistance(stops: List<Stop>, start: String, end: String): Double {
     val startIndex = stops.indexOfFirst { it.name == start }
     val endIndex = stops.indexOfFirst { it.name == end }
-    return if (startIndex >= 0 && endIndex >= 0 && startIndex <= endIndex) {
+
+    if (startIndex == -1 || endIndex == -1) return 0.0  // Prevent crashes
+
+    return if (startIndex <= endIndex) {
         stops.subList(startIndex, endIndex + 1).sumOf { it.distance }
-    } else 0.0
+    } else {
+        stops.subList(endIndex, startIndex + 1).sumOf { it.distance }
+    }
 }
+
+
 
 
 @Composable
@@ -244,8 +297,7 @@ fun StopItem(stop: Stop, isCurrent: Boolean, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
-            .clickable { onClick() },
+            .padding(8.dp),
         colors = CardDefaults.cardColors(containerColor = if (isCurrent) Color(0xFFFFDDC1) else Color.DarkGray),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
